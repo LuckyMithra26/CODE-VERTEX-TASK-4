@@ -1,0 +1,152 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+import random
+
+class RockPaperScissorsApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Rock-Paper-Scissors Game")
+        self.root.geometry("500x400")
+        self.root.resizable(False, False)
+
+        # Initialize scores
+        self.user_score = 0
+        self.computer_score = 0
+        self.tie_score = 0
+
+        # Choices
+        self.choices = ["Rock", "Paper", "Scissors"]
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        padding = {'padx': 10, 'pady': 10}
+
+        # Title Label
+        title_label = ttk.Label(self.root, text="Rock-Paper-Scissors", font=("Helvetica", 20, "bold"))
+        title_label.pack(pady=20)
+
+        # Choices Frame
+        choices_frame = ttk.Frame(self.root)
+        choices_frame.pack(pady=10)
+
+        rock_button = ttk.Button(choices_frame, text="Rock", command=lambda: self.play("Rock"), width=15)
+        rock_button.grid(row=0, column=0, padx=5, pady=5)
+
+        paper_button = ttk.Button(choices_frame, text="Paper", command=lambda: self.play("Paper"), width=15)
+        paper_button.grid(row=0, column=1, padx=5, pady=5)
+
+        scissors_button = ttk.Button(choices_frame, text="Scissors", command=lambda: self.play("Scissors"), width=15)
+        scissors_button.grid(row=0, column=2, padx=5, pady=5)
+
+        # Result Frame
+        result_frame = ttk.Frame(self.root)
+        result_frame.pack(pady=10)
+
+        # User Choice
+        user_label = ttk.Label(result_frame, text="Your Choice:", font=("Helvetica", 12))
+        user_label.grid(row=0, column=0, sticky="W")
+        self.user_choice_var = tk.StringVar()
+        user_choice_display = ttk.Label(result_frame, textvariable=self.user_choice_var, font=("Helvetica", 12, "bold"))
+        user_choice_display.grid(row=0, column=1, sticky="W")
+
+        # Computer Choice
+        computer_label = ttk.Label(result_frame, text="Computer's Choice:", font=("Helvetica", 12))
+        computer_label.grid(row=1, column=0, sticky="W")
+        self.computer_choice_var = tk.StringVar()
+        computer_choice_display = ttk.Label(result_frame, textvariable=self.computer_choice_var, font=("Helvetica", 12, "bold"))
+        computer_choice_display.grid(row=1, column=1, sticky="W")
+
+        # Outcome
+        outcome_label = ttk.Label(self.root, text="", font=("Helvetica", 14, "bold"))
+        outcome_label.pack(pady=10)
+        self.outcome_var = tk.StringVar()
+        outcome_display = ttk.Label(self.root, textvariable=self.outcome_var, font=("Helvetica", 14, "bold"), foreground="blue")
+        outcome_display.pack()
+
+        # Scores Frame
+        scores_frame = ttk.LabelFrame(self.root, text="Scores")
+        scores_frame.pack(pady=10, padx=10, fill="x")
+
+        user_score_label = ttk.Label(scores_frame, text="Your Score:", font=("Helvetica", 12))
+        user_score_label.grid(row=0, column=0, sticky="W", padx=10, pady=5)
+        self.user_score_var = tk.IntVar(value=self.user_score)
+        user_score_display = ttk.Label(scores_frame, textvariable=self.user_score_var, font=("Helvetica", 12, "bold"))
+        user_score_display.grid(row=0, column=1, sticky="W", padx=10, pady=5)
+
+        computer_score_label = ttk.Label(scores_frame, text="Computer's Score:", font=("Helvetica", 12))
+        computer_score_label.grid(row=1, column=0, sticky="W", padx=10, pady=5)
+        self.computer_score_var = tk.IntVar(value=self.computer_score)
+        computer_score_display = ttk.Label(scores_frame, textvariable=self.computer_score_var, font=("Helvetica", 12, "bold"))
+        computer_score_display.grid(row=1, column=1, sticky="W", padx=10, pady=5)
+
+        tie_score_label = ttk.Label(scores_frame, text="Ties:", font=("Helvetica", 12))
+        tie_score_label.grid(row=2, column=0, sticky="W", padx=10, pady=5)
+        self.tie_score_var = tk.IntVar(value=self.tie_score)
+        tie_score_display = ttk.Label(scores_frame, textvariable=self.tie_score_var, font=("Helvetica", 12, "bold"))
+        tie_score_display.grid(row=2, column=1, sticky="W", padx=10, pady=5)
+
+        # Play Again Button
+        play_again_button = ttk.Button(self.root, text="Play Again", command=self.reset_game, width=20)
+        play_again_button.pack(pady=10)
+
+        # Exit Button
+        exit_button = ttk.Button(self.root, text="Exit", command=self.root.quit, width=20)
+        exit_button.pack(pady=5)
+
+    def play(self, user_choice):
+        computer_choice = random.choice(self.choices)
+
+        self.user_choice_var.set(user_choice)
+        self.computer_choice_var.set(computer_choice)
+
+        outcome = self.determine_winner(user_choice, computer_choice)
+        self.outcome_var.set(outcome)
+
+        # Update scores
+        if outcome == "You Win!":
+            self.user_score += 1
+            self.user_score_var.set(self.user_score)
+        elif outcome == "You Lose!":
+            self.computer_score += 1
+            self.computer_score_var.set(self.computer_score)
+        else:
+            self.tie_score += 1
+            self.tie_score_var.set(self.tie_score)
+
+    def determine_winner(self, user, computer):
+        if user == computer:
+            return "It's a Tie!"
+
+        # Define win conditions
+        win_conditions = {
+            "Rock": "Scissors",    # Rock beats Scissors
+            "Paper": "Rock",       # Paper beats Rock
+            "Scissors": "Paper"    # Scissors beats Paper
+        }
+
+        if win_conditions[user] == computer:
+            return "You Win!"
+        else:
+            return "You Lose!"
+
+    def reset_game(self):
+        self.user_choice_var.set("")
+        self.computer_choice_var.set("")
+        self.outcome_var.set("")
+
+    def reset_scores(self):
+        self.user_score = 0
+        self.computer_score = 0
+        self.tie_score = 0
+        self.user_score_var.set(self.user_score)
+        self.computer_score_var.set(self.computer_score)
+        self.tie_score_var.set(self.tie_score)
+
+def main():
+    root = tk.Tk()
+    app = RockPaperScissorsApp(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
